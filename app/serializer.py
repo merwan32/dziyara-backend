@@ -15,13 +15,21 @@ class TransportMeanSerializer(serializers.ModelSerializer):
 
 
 class UserCommentSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source='user.username') 
+    user = serializers.CharField(source='user.username')
+
     class Meta:
         model = UserComment
-        fields = ('id', 'user', 'content')
+        fields = ('id', 'user', 'site', 'content')
+
+    def create(self, validated_data):
+        user_username = validated_data.pop('user')['username']
+        user = User.objects.get(username=user_username)
+        validated_data['user'] = user
+        return super().create(validated_data)
+    
 
 class TouristicSiteSerializer(serializers.ModelSerializer):
-    Transport_Mean = TransportMeanSerializer(many=True, read_only=True)
+    Transport_Mean = TransportMeanSerializer(many=True)
     comments = serializers.SerializerMethodField()
 
     class Meta:
