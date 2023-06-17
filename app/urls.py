@@ -6,9 +6,10 @@ urlpatterns = [
 
     path('touristic-sites/', TouristicSiteListCreateView.as_view(), name='touristic-sites'),
     path('touristic-sites/by-name/', TouristicSiteByNameAPIView.as_view(), name='touristic-site-by-name'),
+    path('events/', EventListView.as_view(), name='event-list'),
 
 
-    
+
     path('comments/add/', UserCommentCreateView.as_view(), name='user-comment-create'),
 
 

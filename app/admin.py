@@ -10,6 +10,7 @@ admin.site.register(SiteEvaluation)
 admin.site.register(WorkingDayTime)
 admin.site.register(UserComment)
 admin.site.register(TransportMean)
+admin.site.register(Event)
 
 
 @admin.register(TouristicSite)

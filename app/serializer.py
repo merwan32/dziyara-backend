@@ -49,3 +49,7 @@ class TouristicMapSiteSerializer(serializers.ModelSerializer):
         fields = ['site_name', 'latitude', 'longitude', ]
 
 
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
