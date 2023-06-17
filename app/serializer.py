@@ -13,17 +13,27 @@ class TransportMeanSerializer(serializers.ModelSerializer):
         fields = ['mean_name', 'icon']
 
 
+
 class UserCommentSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.username') 
     class Meta:
         model = UserComment
-        fields = ['id', 'user', 'content', 'created_at']
+        fields = ('id', 'user', 'content')
 
 class TouristicSiteSerializer(serializers.ModelSerializer):
     Transport_Mean = TransportMeanSerializer(many=True, read_only=True)
-    comments = UserCommentSerializer(many=True, read_only=True)
+    comments = serializers.SerializerMethodField()
+
     class Meta:
         model = TouristicSite
-        fields = ['id','site_name', 'site_type', 'description', 'current_stars', 'picture', 'latitude', 'longitude', 'wilaya', 'Working_Time', 'Transport_Mean','comments']
+        fields = ('id', 'site_name', 'site_type', 'description', 'current_stars', 'picture',
+                  'latitude', 'longitude', 'agent', 'wilaya', 'Working_Time', 'Transport_Mean', 'comments')
+
+    def get_comments(self, obj):
+        comments = UserComment.objects.filter(site=obj)
+        serializer = UserCommentSerializer(comments, many=True)
+        return serializer.data
+
 
 class TouristicMapSiteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,7 +41,3 @@ class TouristicMapSiteSerializer(serializers.ModelSerializer):
         fields = ['site_name', 'latitude', 'longitude', ]
 
 
-class UserCommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserComment
-        fields = '__all__'

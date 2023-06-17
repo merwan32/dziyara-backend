@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-5%)3b0^k90b#+xv-lkd!_e5ypl!o4pw-3-ui^)ev9z_6ak@#i&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['dziyara.onrender.com']
-
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -89,9 +88,8 @@ DATABASES = {
 }
 
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  
-]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Password validation

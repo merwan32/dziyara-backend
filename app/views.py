@@ -10,15 +10,26 @@ from rest_framework.permissions import IsAuthenticated
 
 
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
 class UserCreateView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            user = User.objects.create_user(username=serializer.validated_data['username'],
-                                            email=serializer.validated_data['email'],
-                                            password=serializer.validated_data['password'])
-            return Response({'message': 'User created successfully.'}, status=status.HTTP_201_CREATED)
-            userProfile = UserProfile.objects.create(user=user, phone_number=serializer.validated_data['phone_number'])
+            user = User.objects.create_user(
+                username=serializer.validated_data['username'],
+                email=serializer.validated_data['email'],
+                password=serializer.validated_data['password']
+            )
+            UserProfile.objects.create(user=user, phone_number=serializer.validated_data['phone_number'])
+
+            refresh_token = RefreshToken.for_user(user)
+            access_token = refresh_token.access_token
+
+            return Response(
+                {'message': 'User created successfully.', 'access_token': str(access_token), 'refresh_token': str(refresh_token)},
+                status=status.HTTP_201_CREATED
+            )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -31,11 +42,11 @@ class LoginView(APIView):
         if user is None:
             return Response({'error': 'Invalid credentials'}, status=400)
 
-        access_token = AccessToken.for_user(user)
-
         refresh_token = RefreshToken.for_user(user)
+        access_token = refresh_token.access_token
 
         return Response({'access_token': str(access_token), 'refresh_token': str(refresh_token)})
+
 
 
 
@@ -59,10 +70,13 @@ class TouristicSiteByNameAPIView(APIView):
 
 
 class UserCommentCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+
     def post(self, request, format=None):
+        # Access the authenticated user
         serializer = UserCommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
